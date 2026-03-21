@@ -56,16 +56,16 @@ export function SceneViewer({ sceneJSON, className = "" }: SceneViewerProps) {
     controls.maxPolarAngle = Math.PI / 2.1;
 
     // Floor
-    const { floor_plane } = sceneJSON;
-    const floorGeo = new THREE.PlaneGeometry(floor_plane.width_m, floor_plane.depth_m);
+    const { floor: floorSpec } = sceneJSON;
+    const floorGeo = new THREE.PlaneGeometry(floorSpec.width_m, floorSpec.depth_m);
     const floorMat = new THREE.MeshStandardMaterial({
       color: 0x1a1a2e,
       roughness: 0.8,
     });
-    const floor = new THREE.Mesh(floorGeo, floorMat);
-    floor.rotation.x = -Math.PI / 2;
-    floor.receiveShadow = true;
-    scene.add(floor);
+    const floorMesh = new THREE.Mesh(floorGeo, floorMat);
+    floorMesh.rotation.x = -Math.PI / 2;
+    floorMesh.receiveShadow = true;
+    scene.add(floorMesh);
 
     // Lighting
     const ambient = new THREE.AmbientLight(0x404060, 0.5);

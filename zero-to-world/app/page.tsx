@@ -7,6 +7,7 @@ import { usePipeline } from "@/lib/hooks/use-pipeline";
 import { PipelineProgress } from "@/app/components/pipeline-progress";
 import { SceneLabels } from "@/app/components/scene-labels";
 import { MjcfViewer } from "@/app/components/mjcf-viewer";
+import { FALLBACK_DEMO_PLY_URL } from "@/lib/demo-ply";
 
 // Dynamic import SplatViewer to avoid SSR issues with Three.js
 const SplatViewer = dynamic(
@@ -74,7 +75,7 @@ export default function Home() {
     // Bypass scanning entirely, go straight to manual Splat analysis
     setStage("LABELLING", 0);
     setPlyUrl(
-      process.env.NEXT_PUBLIC_DEMO_PLY_URL || "https://huggingface.co/datasets/dylanebert/3dgs/resolve/main/living_room/point_cloud/iteration_30000/point_cloud.ply"
+      process.env.NEXT_PUBLIC_DEMO_PLY_URL || FALLBACK_DEMO_PLY_URL
     );
     setStartTime(Date.now());
     setElapsed(0);
@@ -243,7 +244,7 @@ export default function Home() {
                   ref={splatRef as React.Ref<any>}
                   plyUrl={plyUrl}
                   sceneJSON={sceneJSON}
-                  showRobot={showTraining}
+                  showRobot={!!sceneJSON && stage !== "ERROR"}
                   className="aspect-video"
                 />
                 {isComplete && sessionId && (

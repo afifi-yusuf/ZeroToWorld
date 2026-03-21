@@ -1,6 +1,7 @@
 import { put } from "@vercel/blob";
 import { readFile } from "fs/promises";
 import path from "path";
+import { FALLBACK_DEMO_PLY_URL } from "@/lib/demo-ply";
 
 /**
  * 3D reconstruction — looks for a .ply exported by the gsplat pipeline
@@ -43,6 +44,6 @@ export async function reconstruct(
     return demoUrl;
   }
 
-  console.log("[reconstruct] No .ply available");
-  return "";
+  console.log(`[reconstruct] No DEMO_PLY_URL; using bundled fallback`);
+  return FALLBACK_DEMO_PLY_URL;
 }

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { analyseScene } from "@/lib/services/gemini";
 import { generateMJCF } from "@/lib/services/mujoco";
+import { reconstruct } from "@/lib/services/reconstruct";
 import { updateSession } from "@/lib/supabase";
 
 export async function POST(req: Request) {
@@ -18,10 +19,13 @@ export async function POST(req: Request) {
     // Extrapolate the MJCF Simulator configuration
     const mjcfXml = generateMJCF(sceneJSON);
 
-    // Save strictly to Supabase so the usePipeline hook automatically syncs the UI completely!
+    const plyUrl = await reconstruct(sessionId, []);
+
+    // Persist session so /view/[id] and polling get ply_url (was never set before).
     await updateSession(sessionId, "COMPLETE", 100, {
       scene_json: sceneJSON,
-      mjcf_xml: mjcfXml
+      mjcf_xml: mjcfXml,
+      ply_url: plyUrl,
     });
 
     return NextResponse.json({ ok: true, sceneJSON });

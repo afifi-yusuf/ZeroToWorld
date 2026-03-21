@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState, forwardRef, useImperativeHandle } from "react";
-import * as THREE from "three";
 import { RobotOverlay } from "./robot-overlay";
 import type { SceneJSON } from "@/lib/types";
 
@@ -20,11 +19,9 @@ export const SplatViewer = forwardRef<SplatViewerHandle, SplatViewerProps>(
   ({ plyUrl, sceneJSON = null, showRobot = false, className = "" }, ref) => {
     const containerRef = useRef<HTMLDivElement>(null);
   const viewerRef = useRef<unknown>(null);
-  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
-  const [threeScene, setThreeScene] = useState<THREE.Scene | null>(null);
 
   useImperativeHandle(ref, () => ({
     capturePano: async () => {
@@ -33,7 +30,8 @@ export const SplatViewer = forwardRef<SplatViewerHandle, SplatViewerProps>(
       if (!v || !v.camera || !v.renderer) return [];
 
       const frames: string[] = [];
-      const cam = v.camera as THREE.PerspectiveCamera;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const cam = v.camera as any;
       const originalPosition = cam.position.clone();
       const originalRotation = cam.rotation.clone();
 
@@ -105,15 +103,6 @@ export const SplatViewer = forwardRef<SplatViewerHandle, SplatViewerProps>(
         if (!disposed) {
           await viewer.start();
           setLoading(false);
-
-          // Expose the Three.js scene for robot overlay
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const v = viewer as any;
-          const scene = v.threeScene as THREE.Scene | undefined ??
-            v.scene as THREE.Scene | undefined;
-          if (scene) {
-            setThreeScene(scene);
-          }
         }
       } catch (err) {
         if (!disposed) {
@@ -127,16 +116,11 @@ export const SplatViewer = forwardRef<SplatViewerHandle, SplatViewerProps>(
 
     return () => {
       disposed = true;
-      setThreeScene(null);
       try {
         if (viewerRef.current) {
           const v = viewerRef.current as { dispose?: () => void };
           v.dispose?.();
           viewerRef.current = null;
-        }
-        if (rendererRef.current) {
-          rendererRef.current.dispose();
-          rendererRef.current = null;
         }
       } catch {
         // Ignore disposal errors
@@ -161,11 +145,11 @@ export const SplatViewer = forwardRef<SplatViewerHandle, SplatViewerProps>(
     <div className={`relative rounded-xl overflow-hidden border border-white/10 ${className}`}>
       <div ref={containerRef} className="w-full h-full" />
 
-      {/* Robot overlay — injects meshes into the Three.js scene */}
+      {/* MuJoCo: headless sim streams JPEG frames over WebSocket (see sim-server/server.py) */}
       <RobotOverlay
-        threeScene={threeScene}
+        threeScene={null}
         sceneJSON={sceneJSON}
-        active={showRobot && !loading && !error}
+        active={showRobot && !loading && !error && !!sceneJSON}
       />
 
       {/* Loading overlay */}
@@ -213,8 +197,14 @@ export const SplatViewer = forwardRef<SplatViewerHandle, SplatViewerProps>(
 
       {/* Controls hint */}
       {!loading && !error && (
-        <div className="absolute bottom-3 left-3 bg-black/50 backdrop-blur-sm rounded-lg px-3 py-1.5 text-xs text-white/40 font-mono z-10 pointer-events-none animate-fade-out">
-          Drag to orbit · Scroll to zoom · Right-drag to pan
+        <div className="absolute bottom-3 left-3 bg-black/50 backdrop-blur-sm rounded-lg px-3 py-1.5 text-xs text-white/40 font-mono z-10 pointer-events-none max-w-[min(100%,20rem)] leading-relaxed">
+          Drag to orbit · Scroll · Right-drag pan
+          {showRobot && sceneJSON ? (
+            <span className="block text-white/55 mt-1">
+              MuJoCo composited in-scene — run{" "}
+              <code className="text-white/70">sim-server/server.py</code>
+            </span>
+          ) : null}
         </div>
       )}
     </div>

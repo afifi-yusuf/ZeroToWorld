@@ -1,9 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams } from "next/navigation";
 import { SplatViewer } from "@/app/components/splat-viewer";
+import { FALLBACK_DEMO_PLY_URL } from "@/lib/demo-ply";
 import type { SessionRow } from "@/lib/types";
+
+const POLL_MS = 2000;
+const MAX_ATTEMPTS = 30;
 
 export default function ViewPage() {
   const params = useParams();
@@ -11,21 +15,60 @@ export default function ViewPage() {
   const [session, setSession] = useState<SessionRow | null>(null);
   const [fetchError, setFetchError] = useState<string | null>(null);
 
+  const effectivePlyUrl = useMemo(
+    () =>
+      session?.ply_url ||
+      process.env.NEXT_PUBLIC_DEMO_PLY_URL ||
+      FALLBACK_DEMO_PLY_URL,
+    [session?.ply_url]
+  );
+
   useEffect(() => {
-    async function fetchSession() {
+    if (!sessionId) return;
+
+    let cancelled = false;
+    let attempts = 0;
+    let intervalId: ReturnType<typeof setInterval> | undefined;
+
+    async function fetchOnce(): Promise<boolean> {
+      if (cancelled) return true;
+      attempts++;
       try {
         const res = await fetch(`/api/pipeline/status/${sessionId}`);
-        if (!res.ok) {
-          setFetchError("Session not found");
-          return;
+        if (cancelled) return true;
+        if (res.ok) {
+          const data: SessionRow = await res.json();
+          setSession(data);
+          setFetchError(null);
+          return true;
         }
-        const data: SessionRow = await res.json();
-        setSession(data);
+        if (attempts >= MAX_ATTEMPTS) {
+          setFetchError("Session not found");
+          return true;
+        }
+        return false;
       } catch {
-        setFetchError("Failed to load session");
+        if (attempts >= MAX_ATTEMPTS) {
+          setFetchError("Failed to load session");
+          return true;
+        }
+        return false;
       }
     }
-    if (sessionId) fetchSession();
+
+    void (async () => {
+      const done = await fetchOnce();
+      if (done || cancelled) return;
+      intervalId = setInterval(async () => {
+        const stop = await fetchOnce();
+        if (stop && intervalId) clearInterval(intervalId);
+      }, POLL_MS);
+    })();
+
+    return () => {
+      cancelled = true;
+      if (intervalId) clearInterval(intervalId);
+    };
   }, [sessionId]);
 
   return (
@@ -64,11 +107,13 @@ export default function ViewPage() {
               </a>
             </div>
           </div>
-        ) : session?.ply_url ? (
+        ) : session ? (
           <SplatViewer
-            plyUrl={session.ply_url}
+            plyUrl={effectivePlyUrl}
             sceneJSON={session.scene_json}
-            showRobot={session.stage === "COMPLETE" || session.stage === "TRAINING" || session.stage === "BUILDING_SIM"}
+            showRobot={
+              !!session.scene_json && session.stage !== "ERROR"
+            }
             className="w-full h-full"
           />
         ) : (
@@ -79,9 +124,7 @@ export default function ViewPage() {
                 <div className="absolute inset-0 rounded-full border-2 border-t-blue-400 border-r-transparent border-b-transparent border-l-transparent animate-spin" />
               </div>
               <p className="text-white/40 text-sm font-mono">
-                {session
-                  ? "3D reconstruction in progress…"
-                  : "Loading session…"}
+                Loading session…
               </p>
             </div>
           </div>
@@ -96,8 +139,8 @@ export default function ViewPage() {
                   session.stage === "COMPLETE"
                     ? "bg-green-500"
                     : session.stage === "ERROR"
-                    ? "bg-red-500"
-                    : "bg-blue-500 animate-pulse"
+                      ? "bg-red-500"
+                      : "bg-blue-500 animate-pulse"
                 }`}
               />
               <span className="text-xs font-mono text-white/50">

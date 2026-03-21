@@ -19,6 +19,7 @@ export type PipelineStage =
   | "LABELLING"
   | "BUILDING_SIM"
   | "SIMULATING"
+  | "TRAINING"
   | "COMPLETE"
   | "ERROR";
 

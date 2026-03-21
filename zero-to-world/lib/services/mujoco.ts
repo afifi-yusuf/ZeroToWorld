@@ -15,10 +15,16 @@ export function generateMJCF(scene: SceneJSON): string {
   return `<mujoco model="zero-to-world-hackathon-room">
   <!-- The Unitree G1 Humanoid robot - loaded from MuJoCo Menagerie -->
   <include file="mujoco_menagerie/unitree_g1/g1.xml"/>
-  
+
+  <!-- Headless Renderer needs explicit headlight; trackcom aimed at whole-model COM misses the robot when the floor dominates. -->
+  <visual>
+    <headlight diffuse="0.9 0.9 0.9" ambient="0.25 0.25 0.25" specular="0.4 0.4 0.4"/>
+    <global azimuth="120" elevation="-25"/>
+  </visual>
+  <statistic center="0 0 0.9" extent="1.8"/>
+
   <worldbody>
-    <!-- Tracking camera so default viewport doesn't lose Spot -->
-    <camera name="track" pos="0 -6 3" mode="trackcom" xyaxes="1 0 0 0 1 2"/>
+    <camera name="track" pos="2.8 -2.8 1.35" mode="targetbody" target="pelvis" fovy="50"/>
 
     <!-- Floor plane -->
     <geom name="floor" type="plane" size="${scene.floor.width_m / 2} ${scene.floor.depth_m / 2} 0.1" pos="0 0 0" rgba="0 0 0 0"/>

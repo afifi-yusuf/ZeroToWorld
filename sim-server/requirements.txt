@@ -1,4 +1,12 @@
-mujoco
-mujoco-playground
+# MuJoCo publishes binary wheels for CPython 3.11 and 3.12 on macOS arm64.
+# On Python 3.14+ pip falls back to building from source, which needs MUJOCO_PATH
+# and the native MuJoCo SDK — use 3.12 instead:
+#   cd sim-server && python3.12 -m venv .venv && source .venv/bin/activate
+#   pip install -r requirements.txt
+
+mujoco>=3.1.0,<4
 numpy
-websockets
+websockets>=12.0
+opencv-python-headless>=4.8.0
+# Optional: quadruped joystick policy used only if import succeeds
+# mujoco-playground
