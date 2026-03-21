@@ -12,7 +12,7 @@ struct ContentView: View {
 
         let envValue = (ProcessInfo.processInfo.environment["RELAY_HOST"] ?? "")
             .trimmingCharacters(in: .whitespacesAndNewlines)
-        return envValue.isEmpty ? "172.20.10.3" : envValue
+        return envValue.isEmpty ? "10.154.16.250" : envValue
     }
 
     private var relayPort: Int {

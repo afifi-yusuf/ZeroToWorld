@@ -29,6 +29,11 @@ router.post("/frame", upload.single("frame"), (req, res) => {
 
   state.addFrame(entry);
 
+  const from = req.ip || req.socket.remoteAddress || "?";
+  console.log(
+    `[ingest/frame] id=${id} ${(data.length / 1024).toFixed(1)} KB · total ${state.framesIngested} · ${from}`
+  );
+
   const wsMsg: WsFrameMessage = {
     type: "frame",
     id,
@@ -63,6 +68,12 @@ router.post("/transcript", (req, res) => {
   };
 
   state.addTranscript(segment);
+
+  const preview =
+    text.length > 80 ? `${text.slice(0, 80)}…` : text;
+  console.log(
+    `[ingest/transcript] id=${id} source=${source ?? "?"} · total ${state.transcriptsIngested} · "${preview.replace(/\s+/g, " ")}"`
+  );
 
   const wsMsg: WsTranscriptMessage = {
     type: "transcript",

@@ -385,6 +385,7 @@
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "ZeroToWorld connects to Meta smart glasses via Bluetooth.";
 				INFOPLIST_KEY_NSCameraUsageDescription = "ZeroToWorld uses the camera to capture video frames for analysis.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "ZeroToWorld needs the microphone to capture live audio for transcription.";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "ZeroToWorld uses your local network to reach the relay server on your Mac for frames, audio, and TTS.";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "ZeroToWorld transcribes live audio to identify Polymarket betting opportunities.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -423,6 +424,7 @@
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "ZeroToWorld connects to Meta smart glasses via Bluetooth.";
 				INFOPLIST_KEY_NSCameraUsageDescription = "ZeroToWorld uses the camera to capture video frames for analysis.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "ZeroToWorld needs the microphone to capture live audio for transcription.";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "ZeroToWorld uses your local network to reach the relay server on your Mac for frames, audio, and TTS.";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "ZeroToWorld transcribes live audio to identify Polymarket betting opportunities.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

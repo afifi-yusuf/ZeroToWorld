@@ -59,7 +59,14 @@ final class ZeroToWorldSessionViewModel: ObservableObject {
         isActive = true
         errorMessage = nil
 
-        // 0. Start TTS WebSocket listener
+        // 1. Health check first — avoids a late failure overwriting state after frames already succeeded.
+        do {
+            _ = try await client.health()
+        } catch {
+            self.errorMessage = "Relay offline at \(host):\(port): \(error.localizedDescription)"
+        }
+
+        // 0. TTS WebSocket (after health so Local Network / Wi‑Fi path is already exercised)
         Task {
             await client.setOnTtsReceived { [weak self] text in
                 print("[ZeroToWorld] TTS received from relay: \(text.prefix(50))...")
@@ -71,20 +78,11 @@ final class ZeroToWorldSessionViewModel: ObservableObject {
             print("[ZeroToWorld] TTS WebSocket listener started")
         }
 
-        // 1. Health check
-        Task {
-            do {
-                _ = try await client.health()
-            } catch {
-                self.errorMessage = "Relay offline at \(host):\(port): \(error.localizedDescription)"
-            }
-        }
-
         // 2. Wire final transcript callback (fires on Apple STT timeout/stop)
         speechTranscriber.onTranscript = { [weak self] text, confidence in
             guard let self, let relay = self.relay else { return }
             self.lastFlushedTranscript = text
-            Task {
+            Task { @MainActor in
                 do {
                     _ = try await relay.pushTranscript(
                         text: text,
@@ -93,6 +91,7 @@ final class ZeroToWorldSessionViewModel: ObservableObject {
                         language: "en"
                     )
                     self.transcriptsSent += 1
+                    self.errorMessage = nil
                 } catch {
                     print("[ZeroToWorld] Transcript push failed: \(error)")
                 }
@@ -117,6 +116,7 @@ final class ZeroToWorldSessionViewModel: ObservableObject {
                         language: "en"
                     )
                     self.transcriptsSent += 1
+                    self.errorMessage = nil
                 } catch {
                     print("[ZeroToWorld] Partial transcript push failed: \(error)")
                 }
@@ -206,11 +206,12 @@ final class ZeroToWorldSessionViewModel: ObservableObject {
         guard let relay, !framePushInFlight else { return }
 
         framePushInFlight = true
-        Task {
+        Task { @MainActor in
             defer { self.framePushInFlight = false }
             do {
                 _ = try await relay.pushFrame(jpegData)
                 self.framesSent += 1
+                self.errorMessage = nil
             } catch {
                 print("[ZeroToWorld] Frame push failed: \(error)")
             }

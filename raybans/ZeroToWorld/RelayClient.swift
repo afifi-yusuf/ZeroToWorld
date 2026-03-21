@@ -32,6 +32,9 @@ actor RelayClient {
         self.ttsWsURL = URL(string: "ws://\(host):\(port)/ws/tts")!
         let config = URLSessionConfiguration.default
         config.timeoutIntervalForRequest = 5
+        // LAN IPs must not go over cellular; iOS may report "offline" if it tries.
+        config.waitsForConnectivity = false
+        config.allowsCellularAccess = false
         self.session = URLSession(configuration: config)
         if let status {
             self.status = status
@@ -48,6 +51,8 @@ actor RelayClient {
         self.transcriptURL = URL(string: "\(base)/ingest/transcript")!
         self.healthURL = URL(string: "\(base)/health")!
         self.ttsWsURL = URL(string: "ws://\(host):\(port)/ws/tts")!
+        configuration.waitsForConnectivity = false
+        configuration.allowsCellularAccess = false
         self.session = URLSession(configuration: configuration)
         if let status {
             self.status = status

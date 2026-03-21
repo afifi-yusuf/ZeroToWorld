@@ -33,8 +33,8 @@ if (require.main === module) {
     initPolymarketForwarder(POLYMARKET_WS_URL);
   }
 
-  server.listen(PORT, () => {
-    console.log(`Relay server listening on port ${PORT}`);
+  server.listen(PORT, "0.0.0.0", () => {
+    console.log(`Relay server listening on 0.0.0.0:${PORT} (reachable from your LAN)`);
     console.log(`  REST:  http://localhost:${PORT}/health`);
     console.log(`  WS:    ws://localhost:${PORT}/ws/frames`);
     console.log(`  WS:    ws://localhost:${PORT}/ws/transcript`);
