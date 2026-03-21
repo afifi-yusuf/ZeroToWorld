@@ -1,0 +1,716 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		3B5A6A462F53628F00327BE3 /* MWDATCore in Frameworks */ = {isa = PBXBuildFile; productRef = BB000001BBBB000100000001 /* MWDATCore */; };
+		3B5A6A472F53628F00327BE3 /* MWDATCamera in Frameworks */ = {isa = PBXBuildFile; productRef = BB000001BBBB000100000002 /* MWDATCamera */; };
+		8D7D240E2F534CC100E8C995 /* RelayModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D7D240D2F534CC100E8C995 /* RelayModels.swift */; };
+		8D7D240F2F534CC100E8C995 /* RelayClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D7D240C2F534CC100E8C995 /* RelayClient.swift */; };
+		8D7D24112F534CD600E8C995 /* ZeroToWorldSessionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D7D24102F534CD600E8C995 /* ZeroToWorldSessionViewModel.swift */; };
+		8D7D24132F534D0500E8C995 /* SpeechTranscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D7D24122F534D0500E8C995 /* SpeechTranscriber.swift */; };
+		AA000001AAAA000100000001 /* CameraSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000001AAAA000100000005 /* CameraSource.swift */; };
+		AA000001AAAA000100000002 /* FrameThrottler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000001AAAA000100000006 /* FrameThrottler.swift */; };
+		AA000001AAAA000100000003 /* GlassesCameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000001AAAA000100000007 /* GlassesCameraManager.swift */; };
+		AA000001AAAA000100000004 /* GlassesConnectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000001AAAA000100000008 /* GlassesConnectionView.swift */; };
+		CC000001CCCC000100000001 /* TTSPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC000001CCCC000100000002 /* TTSPlayer.swift */; };
+		DD000001DDDD000100000001 /* ZeroToWorldTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD000001DDDD000100000005 /* ZeroToWorldTheme.swift */; };
+		DD000001DDDD000100000002 /* GlassCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD000001DDDD000100000006 /* GlassCard.swift */; };
+		DD000001DDDD000100000003 /* PulsingDot.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD000001DDDD000100000007 /* PulsingDot.swift */; };
+		DD000001DDDD000100000004 /* GradientButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD000001DDDD000100000008 /* GradientButton.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		8D7D23EF2F53280700E8C995 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8D7D23D52F53280600E8C995 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D7D23DC2F53280600E8C995;
+			remoteInfo = ZeroToWorld;
+		};
+		8D7D23F92F53280700E8C995 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8D7D23D52F53280600E8C995 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D7D23DC2F53280600E8C995;
+			remoteInfo = ZeroToWorld;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		8D7D23DD2F53280600E8C995 /* ZeroToWorld.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ZeroToWorld.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8D7D23EE2F53280700E8C995 /* ZeroToWorldTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ZeroToWorldTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		8D7D23F82F53280700E8C995 /* ZeroToWorldUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ZeroToWorldUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		8D7D240C2F534CC100E8C995 /* RelayClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelayClient.swift; sourceTree = "<group>"; };
+		8D7D240D2F534CC100E8C995 /* RelayModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelayModels.swift; sourceTree = "<group>"; };
+		8D7D24102F534CD600E8C995 /* ZeroToWorldSessionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZeroToWorldSessionViewModel.swift; sourceTree = "<group>"; };
+		8D7D24122F534D0500E8C995 /* SpeechTranscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechTranscriber.swift; sourceTree = "<group>"; };
+		AA000001AAAA000100000005 /* CameraSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraSource.swift; sourceTree = "<group>"; };
+		AA000001AAAA000100000006 /* FrameThrottler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameThrottler.swift; sourceTree = "<group>"; };
+		AA000001AAAA000100000007 /* GlassesCameraManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassesCameraManager.swift; sourceTree = "<group>"; };
+		AA000001AAAA000100000008 /* GlassesConnectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassesConnectionView.swift; sourceTree = "<group>"; };
+		CC000001CCCC000100000002 /* TTSPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TTSPlayer.swift; sourceTree = "<group>"; };
+		DD000001DDDD000100000005 /* ZeroToWorldTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZeroToWorldTheme.swift; sourceTree = "<group>"; };
+		DD000001DDDD000100000006 /* GlassCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlassCard.swift; sourceTree = "<group>"; };
+		DD000001DDDD000100000007 /* PulsingDot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PulsingDot.swift; sourceTree = "<group>"; };
+		DD000001DDDD000100000008 /* GradientButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientButton.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		8D7D24002F53280700E8C995 /* Exceptions for "ZeroToWorld" folder in "ZeroToWorld" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 8D7D23DC2F53280600E8C995 /* ZeroToWorld */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		8D7D23DF2F53280600E8C995 /* ZeroToWorld */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				8D7D24002F53280700E8C995 /* Exceptions for "ZeroToWorld" folder in "ZeroToWorld" target */,
+			);
+			path = ZeroToWorld;
+			sourceTree = "<group>";
+		};
+		8D7D23F12F53280700E8C995 /* ZeroToWorldTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = ZeroToWorldTests;
+			sourceTree = "<group>";
+		};
+		8D7D23FB2F53280700E8C995 /* ZeroToWorldUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = ZeroToWorldUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		8D7D23DA2F53280600E8C995 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3B5A6A472F53628F00327BE3 /* MWDATCamera in Frameworks */,
+				3B5A6A462F53628F00327BE3 /* MWDATCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8D7D23EB2F53280700E8C995 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8D7D23F52F53280700E8C995 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		8D7D23D42F53280600E8C995 = {
+			isa = PBXGroup;
+			children = (
+				8D7D24122F534D0500E8C995 /* SpeechTranscriber.swift */,
+				CC000001CCCC000100000002 /* TTSPlayer.swift */,
+				8D7D24102F534CD600E8C995 /* ZeroToWorldSessionViewModel.swift */,
+				8D7D240C2F534CC100E8C995 /* RelayClient.swift */,
+				8D7D240D2F534CC100E8C995 /* RelayModels.swift */,
+				AA000001AAAA00010000000D /* Vision */,
+				AA000001AAAA00010000000E /* Views */,
+				DD000001DDDD00010000000F /* Theme */,
+				8D7D23DF2F53280600E8C995 /* ZeroToWorld */,
+				8D7D23F12F53280700E8C995 /* ZeroToWorldTests */,
+				8D7D23FB2F53280700E8C995 /* ZeroToWorldUITests */,
+				8D7D23DE2F53280600E8C995 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		8D7D23DE2F53280600E8C995 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8D7D23DD2F53280600E8C995 /* ZeroToWorld.app */,
+				8D7D23EE2F53280700E8C995 /* ZeroToWorldTests.xctest */,
+				8D7D23F82F53280700E8C995 /* ZeroToWorldUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		AA000001AAAA00010000000D /* Vision */ = {
+			isa = PBXGroup;
+			children = (
+				AA000001AAAA000100000005 /* CameraSource.swift */,
+				AA000001AAAA000100000006 /* FrameThrottler.swift */,
+				AA000001AAAA000100000007 /* GlassesCameraManager.swift */,
+			);
+			path = Vision;
+			sourceTree = "<group>";
+		};
+		AA000001AAAA00010000000E /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				AA000001AAAA000100000008 /* GlassesConnectionView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		DD000001DDDD00010000000F /* Theme */ = {
+			isa = PBXGroup;
+			children = (
+				DD000001DDDD000100000005 /* ZeroToWorldTheme.swift */,
+				DD000001DDDD000100000006 /* GlassCard.swift */,
+				DD000001DDDD000100000007 /* PulsingDot.swift */,
+				DD000001DDDD000100000008 /* GradientButton.swift */,
+			);
+			path = Theme;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		8D7D23DC2F53280600E8C995 /* ZeroToWorld */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8D7D24012F53280700E8C995 /* Build configuration list for PBXNativeTarget "ZeroToWorld" */;
+			buildPhases = (
+				8D7D23D92F53280600E8C995 /* Sources */,
+				8D7D23DA2F53280600E8C995 /* Frameworks */,
+				8D7D23DB2F53280600E8C995 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				8D7D23DF2F53280600E8C995 /* ZeroToWorld */,
+			);
+			name = ZeroToWorld;
+			packageProductDependencies = (
+				BB000001BBBB000100000001 /* MWDATCore */,
+				BB000001BBBB000100000002 /* MWDATCamera */,
+			);
+			productName = ZeroToWorld;
+			productReference = 8D7D23DD2F53280600E8C995 /* ZeroToWorld.app */;
+			productType = "com.apple.product-type.application";
+		};
+		8D7D23ED2F53280700E8C995 /* ZeroToWorldTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8D7D24062F53280700E8C995 /* Build configuration list for PBXNativeTarget "ZeroToWorldTests" */;
+			buildPhases = (
+				8D7D23EA2F53280700E8C995 /* Sources */,
+				8D7D23EB2F53280700E8C995 /* Frameworks */,
+				8D7D23EC2F53280700E8C995 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				8D7D23F02F53280700E8C995 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				8D7D23F12F53280700E8C995 /* ZeroToWorldTests */,
+			);
+			name = ZeroToWorldTests;
+			packageProductDependencies = (
+			);
+			productName = ZeroToWorldTests;
+			productReference = 8D7D23EE2F53280700E8C995 /* ZeroToWorldTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		8D7D23F72F53280700E8C995 /* ZeroToWorldUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8D7D24092F53280700E8C995 /* Build configuration list for PBXNativeTarget "ZeroToWorldUITests" */;
+			buildPhases = (
+				8D7D23F42F53280700E8C995 /* Sources */,
+				8D7D23F52F53280700E8C995 /* Frameworks */,
+				8D7D23F62F53280700E8C995 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				8D7D23FA2F53280700E8C995 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				8D7D23FB2F53280700E8C995 /* ZeroToWorldUITests */,
+			);
+			name = ZeroToWorldUITests;
+			packageProductDependencies = (
+			);
+			productName = ZeroToWorldUITests;
+			productReference = 8D7D23F82F53280700E8C995 /* ZeroToWorldUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		8D7D23D52F53280600E8C995 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2630;
+				LastUpgradeCheck = 2630;
+				TargetAttributes = {
+					8D7D23DC2F53280600E8C995 = {
+						CreatedOnToolsVersion = 26.3;
+					};
+					8D7D23ED2F53280700E8C995 = {
+						CreatedOnToolsVersion = 26.3;
+						TestTargetID = 8D7D23DC2F53280600E8C995;
+					};
+					8D7D23F72F53280700E8C995 = {
+						CreatedOnToolsVersion = 26.3;
+						TestTargetID = 8D7D23DC2F53280600E8C995;
+					};
+				};
+			};
+			buildConfigurationList = 8D7D23D82F53280600E8C995 /* Build configuration list for PBXProject "ZeroToWorld" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 8D7D23D42F53280600E8C995;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				BB000001BBBB000100000003 /* XCRemoteSwiftPackageReference "meta-wearables-dat-ios" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 8D7D23DE2F53280600E8C995 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				8D7D23DC2F53280600E8C995 /* ZeroToWorld */,
+				8D7D23ED2F53280700E8C995 /* ZeroToWorldTests */,
+				8D7D23F72F53280700E8C995 /* ZeroToWorldUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		8D7D23DB2F53280600E8C995 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8D7D23EC2F53280700E8C995 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8D7D23F62F53280700E8C995 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8D7D23D92F53280600E8C995 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8D7D240E2F534CC100E8C995 /* RelayModels.swift in Sources */,
+				8D7D240F2F534CC100E8C995 /* RelayClient.swift in Sources */,
+				8D7D24132F534D0500E8C995 /* SpeechTranscriber.swift in Sources */,
+				8D7D24112F534CD600E8C995 /* ZeroToWorldSessionViewModel.swift in Sources */,
+				AA000001AAAA000100000001 /* CameraSource.swift in Sources */,
+				AA000001AAAA000100000002 /* FrameThrottler.swift in Sources */,
+				AA000001AAAA000100000003 /* GlassesCameraManager.swift in Sources */,
+				AA000001AAAA000100000004 /* GlassesConnectionView.swift in Sources */,
+				CC000001CCCC000100000001 /* TTSPlayer.swift in Sources */,
+				DD000001DDDD000100000001 /* ZeroToWorldTheme.swift in Sources */,
+				DD000001DDDD000100000002 /* GlassCard.swift in Sources */,
+				DD000001DDDD000100000003 /* PulsingDot.swift in Sources */,
+				DD000001DDDD000100000004 /* GradientButton.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8D7D23EA2F53280700E8C995 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8D7D23F42F53280700E8C995 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		8D7D23F02F53280700E8C995 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8D7D23DC2F53280600E8C995 /* ZeroToWorld */;
+			targetProxy = 8D7D23EF2F53280700E8C995 /* PBXContainerItemProxy */;
+		};
+		8D7D23FA2F53280700E8C995 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8D7D23DC2F53280600E8C995 /* ZeroToWorld */;
+			targetProxy = 8D7D23F92F53280700E8C995 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		8D7D24022F53280700E8C995 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = ZeroToWorld/ZeroToWorld.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = CM77Z5GPZW;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ZeroToWorld/Info.plist;
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "ZeroToWorld connects to Meta smart glasses via Bluetooth.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "ZeroToWorld uses the camera to capture video frames for analysis.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "ZeroToWorld needs the microphone to capture live audio for transcription.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "ZeroToWorld transcribes live audio to identify Polymarket betting opportunities.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.michaeldarlington.ZeroToWorld;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		8D7D24032F53280700E8C995 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = ZeroToWorld/ZeroToWorld.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = CM77Z5GPZW;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ZeroToWorld/Info.plist;
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "ZeroToWorld connects to Meta smart glasses via Bluetooth.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "ZeroToWorld uses the camera to capture video frames for analysis.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "ZeroToWorld needs the microphone to capture live audio for transcription.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "ZeroToWorld transcribes live audio to identify Polymarket betting opportunities.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.michaeldarlington.ZeroToWorld;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		8D7D24042F53280700E8C995 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		8D7D24052F53280700E8C995 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		8D7D24072F53280700E8C995 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ZeroToWorldTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ZeroToWorld.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ZeroToWorld";
+			};
+			name = Debug;
+		};
+		8D7D24082F53280700E8C995 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ZeroToWorldTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ZeroToWorld.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ZeroToWorld";
+			};
+			name = Release;
+		};
+		8D7D240A2F53280700E8C995 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ZeroToWorldUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = ZeroToWorld;
+			};
+			name = Debug;
+		};
+		8D7D240B2F53280700E8C995 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ZeroToWorldUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = ZeroToWorld;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		8D7D23D82F53280600E8C995 /* Build configuration list for PBXProject "ZeroToWorld" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8D7D24042F53280700E8C995 /* Debug */,
+				8D7D24052F53280700E8C995 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		8D7D24012F53280700E8C995 /* Build configuration list for PBXNativeTarget "ZeroToWorld" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8D7D24022F53280700E8C995 /* Debug */,
+				8D7D24032F53280700E8C995 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		8D7D24062F53280700E8C995 /* Build configuration list for PBXNativeTarget "ZeroToWorldTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8D7D24072F53280700E8C995 /* Debug */,
+				8D7D24082F53280700E8C995 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		8D7D24092F53280700E8C995 /* Build configuration list for PBXNativeTarget "ZeroToWorldUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8D7D240A2F53280700E8C995 /* Debug */,
+				8D7D240B2F53280700E8C995 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		BB000001BBBB000100000003 /* XCRemoteSwiftPackageReference "meta-wearables-dat-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/facebook/meta-wearables-dat-ios";
+			requirement = {
+				kind = exactVersion;
+				version = 0.4.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		BB000001BBBB000100000001 /* MWDATCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BB000001BBBB000100000003 /* XCRemoteSwiftPackageReference "meta-wearables-dat-ios" */;
+			productName = MWDATCore;
+		};
+		BB000001BBBB000100000002 /* MWDATCamera */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BB000001BBBB000100000003 /* XCRemoteSwiftPackageReference "meta-wearables-dat-ios" */;
+			productName = MWDATCamera;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 8D7D23D52F53280600E8C995 /* Project object */;
+}

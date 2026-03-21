@@ -1,0 +1,297 @@
+import SwiftUI
+
+struct ContentView: View {
+    @ObservedObject var vm: ZeroToWorldSessionViewModel
+    @AppStorage("SelectedVoiceID") private var selectedVoiceID: String = "TxWZERZ5Hc6h9dGxVmXa"
+
+    // Reads from Info.plist first so values are editable in Xcode.
+    private var relayHost: String {
+        let infoValue = (Bundle.main.object(forInfoDictionaryKey: "RelayHost") as? String)?
+            .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        if !infoValue.isEmpty { return infoValue }
+
+        let envValue = (ProcessInfo.processInfo.environment["RELAY_HOST"] ?? "")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        return envValue.isEmpty ? "172.20.10.3" : envValue
+    }
+
+    private var relayPort: Int {
+        if let number = Bundle.main.object(forInfoDictionaryKey: "RelayPort") as? NSNumber {
+            return number.intValue
+        }
+        if let text = Bundle.main.object(forInfoDictionaryKey: "RelayPort") as? String,
+           let port = Int(text) {
+            return port
+        }
+        if let envPort = Int(ProcessInfo.processInfo.environment["RELAY_PORT"] ?? "") {
+            return envPort
+        }
+        return 8420
+    }
+
+    var body: some View {
+        ZStack {
+            // MARK: - Background
+            LinearGradient(
+                colors: [
+                    ZeroToWorldTheme.backgroundPrimary,
+                    ZeroToWorldTheme.backgroundSecondary,
+                    ZeroToWorldTheme.backgroundPrimary
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .ignoresSafeArea()
+
+            VStack(spacing: 0) {
+                ScrollView {
+                    VStack(spacing: 16) {
+                        // MARK: - Header
+                        HStack {
+                            Text("ZeroToWorld")
+                                .font(.largeTitle.bold())
+                                .foregroundStyle(.white)
+
+                            Spacer()
+
+                            NavigationLink {
+                                GlassesConnectionView(glasses: vm.glassesManager)
+                            } label: {
+                                Image(systemName: "eyeglasses")
+                                    .font(.title2)
+                                    .foregroundStyle(ZeroToWorldTheme.accent)
+                                    .padding(10)
+                                    .background(
+                                        Circle()
+                                            .fill(ZeroToWorldTheme.backgroundCard.opacity(0.6))
+                                    )
+                                    .overlay(
+                                        Circle()
+                                            .stroke(ZeroToWorldTheme.cardBorderGradient, lineWidth: 1)
+                                    )
+                            }
+                        }
+                        .padding(.horizontal)
+                        .padding(.top, 8)
+
+                        // MARK: - Status Row
+                        HStack(spacing: 20) {
+                            StatusPill(
+                                label: "Relay",
+                                isActive: vm.relayConnected
+                            )
+                            StatusPill(
+                                label: "Glasses",
+                                isActive: vm.glassesManager.isConnected
+                            )
+                        }
+                        .frame(maxWidth: .infinity)
+                        .glassCard()
+                        .padding(.horizontal)
+
+                        // MARK: - Voice Persona Selection
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text("Voice Persona")
+                                .font(.caption.bold())
+                                .foregroundStyle(ZeroToWorldTheme.textSecondary)
+                                .textCase(.uppercase)
+                            
+                            Picker("Voice Persona", selection: $selectedVoiceID) {
+                                Text("Jerry B").tag("TxWZERZ5Hc6h9dGxVmXa")
+                                Text("The Fox").tag("h1IssowVS2h4nL5ZbkkK")
+                                Text("Erin").tag("wa4sQVgbDDzUDEzJwch3")
+                                Text("Aria").tag("TC0Zp7WVFzhA8zpTlRqV")
+                            }
+                            .pickerStyle(.segmented)
+                            // Segmented picker on iOS looks better with color constraints
+                            .colorScheme(.dark)
+                        }
+                        .glassCard()
+                        .padding(.horizontal)
+
+                        // MARK: - Camera Preview
+                        VStack(spacing: 12) {
+                            if let frame = vm.latestFrame {
+                                Image(uiImage: frame)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(maxHeight: 200)
+                                    .clipShape(RoundedRectangle(cornerRadius: ZeroToWorldTheme.cornerRadiusSmall))
+                            } else if vm.cameraActive {
+                                VStack(spacing: 8) {
+                                    ProgressView()
+                                        .tint(ZeroToWorldTheme.accent)
+                                    Text("Waiting for frames...")
+                                        .font(.caption)
+                                        .foregroundStyle(ZeroToWorldTheme.textSecondary)
+                                }
+                                .frame(maxWidth: .infinity, minHeight: 120)
+                            } else {
+                                VStack(spacing: 8) {
+                                    Image(systemName: "video.slash")
+                                        .font(.title)
+                                        .foregroundStyle(ZeroToWorldTheme.textSecondary)
+                                    Text("Camera off")
+                                        .font(.caption)
+                                        .foregroundStyle(ZeroToWorldTheme.textSecondary)
+                                }
+                                .frame(maxWidth: .infinity, minHeight: 120)
+                            }
+
+                            Button {
+                                if vm.cameraActive {
+                                    vm.stopCamera()
+                                } else {
+                                    vm.startCamera()
+                                }
+                            } label: {
+                                Label(
+                                    vm.cameraActive ? "Stop Camera" : "Start Camera",
+                                    systemImage: vm.cameraActive ? "video.slash.fill" : "video.fill"
+                                )
+                                .font(.subheadline.bold())
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 10)
+                                .foregroundStyle(vm.cameraActive ? ZeroToWorldTheme.statusAmber : ZeroToWorldTheme.accent)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: ZeroToWorldTheme.cornerRadiusSmall)
+                                        .stroke(
+                                            vm.cameraActive ? ZeroToWorldTheme.statusAmber : ZeroToWorldTheme.accent,
+                                            lineWidth: 1.5
+                                        )
+                                )
+                            }
+                        }
+                        .glassCard()
+                        .padding(.horizontal)
+
+                        // MARK: - Live Transcript
+                        VStack(alignment: .leading, spacing: 10) {
+                            HStack(spacing: 6) {
+                                Image(systemName: "waveform")
+                                    .foregroundStyle(ZeroToWorldTheme.accent)
+                                Text("Live Transcript")
+                                    .font(.subheadline.bold())
+                                    .foregroundStyle(ZeroToWorldTheme.textPrimary)
+                            }
+
+                            Text(vm.userTranscript.isEmpty ? "Waiting for speech..." : vm.userTranscript)
+                                .font(.body)
+                                .foregroundStyle(
+                                    vm.userTranscript.isEmpty
+                                        ? ZeroToWorldTheme.textSecondary
+                                        : ZeroToWorldTheme.textPrimary
+                                )
+                                .frame(maxWidth: .infinity, minHeight: 80, alignment: .topLeading)
+                        }
+                        .glassCard()
+                        .padding(.horizontal)
+
+                        // MARK: - Stats Row
+                        HStack(spacing: 12) {
+                            StatCard(
+                                icon: "text.bubble",
+                                value: "\(vm.transcriptsSent)",
+                                label: "Transcripts"
+                            )
+                            StatCard(
+                                icon: "camera.viewfinder",
+                                value: "\(vm.framesSent)",
+                                label: "Frames"
+                            )
+                        }
+                        .padding(.horizontal)
+
+                        // MARK: - Error Banner
+                        if let error = vm.errorMessage {
+                            HStack(spacing: 8) {
+                                Image(systemName: "exclamationmark.triangle.fill")
+                                    .foregroundStyle(ZeroToWorldTheme.statusRed)
+                                Text(error)
+                                    .font(.caption)
+                                    .foregroundStyle(ZeroToWorldTheme.statusRed)
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .glassCard()
+                            .padding(.horizontal)
+                        }
+                    }
+                    .padding(.bottom, 100)
+                }
+
+                Spacer(minLength: 0)
+            }
+
+            // MARK: - Floating Session Button
+            VStack {
+                Spacer()
+                GradientButton(
+                    title: vm.isActive ? "Stop Session" : "Start Session",
+                    icon: vm.isActive ? "stop.circle.fill" : "mic.circle.fill",
+                    gradient: vm.isActive
+                        ? ZeroToWorldTheme.sessionActiveGradient
+                        : ZeroToWorldTheme.sessionInactiveGradient
+                ) {
+                    Task { @MainActor in
+                        if vm.isActive {
+                            vm.stopSession()
+                        } else {
+                            await vm.startSession(host: relayHost, port: relayPort)
+                        }
+                    }
+                }
+                .padding(.horizontal)
+                .padding(.bottom, 8)
+            }
+        }
+        .navigationBarHidden(true)
+    }
+}
+
+// MARK: - StatusPill
+
+private struct StatusPill: View {
+    let label: String
+    let isActive: Bool
+
+    var body: some View {
+        HStack(spacing: 6) {
+            PulsingDot(isActive: isActive)
+            Text(label)
+                .font(.subheadline)
+                .foregroundStyle(ZeroToWorldTheme.textSecondary)
+        }
+    }
+}
+
+// MARK: - StatCard
+
+private struct StatCard: View {
+    let icon: String
+    let value: String
+    let label: String
+
+    var body: some View {
+        VStack(spacing: 6) {
+            Image(systemName: icon)
+                .font(.title3)
+                .foregroundStyle(ZeroToWorldTheme.accent)
+            Text(value)
+                .font(.title2.bold())
+                .foregroundStyle(ZeroToWorldTheme.textPrimary)
+            Text(label)
+                .font(.caption)
+                .foregroundStyle(ZeroToWorldTheme.textSecondary)
+        }
+        .frame(maxWidth: .infinity)
+        .glassCard()
+    }
+}
+
+#Preview {
+    NavigationStack {
+        ContentView(vm: ZeroToWorldSessionViewModel())
+    }
+    .preferredColorScheme(.dark)
+}
+
