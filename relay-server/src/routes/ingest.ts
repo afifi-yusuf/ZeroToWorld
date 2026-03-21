@@ -10,6 +10,7 @@ import {
 } from "../capture";
 import { broadcastFrame, broadcastTranscript, broadcastTts } from "../ws/handler";
 import { forwardTranscript } from "../forward/polymarket";
+import { forwardFrameToNextJS } from "../forward/nextjs";
 import { FrameEntry, WsFrameMessage, WsTranscriptMessage, WsTtsMessage, TranscriptSegment } from "../types";
 
 const router = Router();
@@ -62,7 +63,14 @@ router.post("/frame", upload.single("frame"), (req, res) => {
 
   state.addFrame(entry);
 
+  // Persist to disk if a capture session is active (COLMAP-ready layout)
   void persistFrameToDisk(data).catch((err) => console.error("[capture] persist frame failed:", err));
+
+  // Forward to Next.js for Vercel Blob storage if a capture session is active
+  const activeSession = getActiveCaptureSession();
+  if (activeSession) {
+    forwardFrameToNextJS(activeSession.sessionId, timestamp, base64).catch(() => {});
+  }
 
   const from = req.ip || req.socket.remoteAddress || "?";
   console.log(

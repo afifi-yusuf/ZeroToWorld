@@ -1,3 +1,5 @@
+import path from "path";
+import fs from "fs";
 import { TranscriptSegment, FrameEntry, FrameMeta, WsTtsMessage } from "./types";
 import { resetCaptureSessionState } from "./capture";
 
@@ -47,6 +49,24 @@ export class RelayState {
   private _ttsIngested = 0;
   private readonly _startTime = Date.now();
 
+  // ── Session tracking ──
+  private _currentSessionId: string | null = null;
+  private _sessionDir: string | null = null;
+  private _sessionFrameCount = 0;
+  private _sessionStartTime: number | null = null;
+
+  get currentSessionId(): string | null {
+    return this._currentSessionId;
+  }
+
+  get sessionDir(): string | null {
+    return this._sessionDir;
+  }
+
+  get sessionFrameCount(): number {
+    return this._sessionFrameCount;
+  }
+
   get framesIngested(): number {
     return this._framesIngested;
   }
@@ -61,6 +81,52 @@ export class RelayState {
 
   get uptimeS(): number {
     return Math.floor((Date.now() - this._startTime) / 1000);
+  }
+
+  startSession(sessionId: string): string {
+    const capturesRoot = path.join(__dirname, "..", "captures");
+    const sessionDir = path.join(capturesRoot, sessionId, "images");
+    fs.mkdirSync(sessionDir, { recursive: true });
+
+    this._currentSessionId = sessionId;
+    this._sessionDir = sessionDir;
+    this._sessionFrameCount = 0;
+    this._sessionStartTime = Date.now();
+
+    console.log(`[session] Started: ${sessionId} → ${sessionDir}`);
+    return sessionDir;
+  }
+
+  stopSession(): { sessionId: string; frameCount: number; durationS: number } | null {
+    if (!this._currentSessionId || !this._sessionStartTime) return null;
+
+    const result = {
+      sessionId: this._currentSessionId,
+      frameCount: this._sessionFrameCount,
+      durationS: Math.floor((Date.now() - this._sessionStartTime) / 1000),
+    };
+
+    console.log(
+      `[session] Stopped: ${result.sessionId} · ${result.frameCount} frames · ${result.durationS}s`
+    );
+
+    this._currentSessionId = null;
+    this._sessionDir = null;
+    this._sessionFrameCount = 0;
+    this._sessionStartTime = null;
+
+    return result;
+  }
+
+  /** Write a frame JPEG to disk if a session is active */
+  persistFrame(data: Buffer, frameId: string): string | null {
+    if (!this._sessionDir) return null;
+
+    const filename = `${Date.now()}_${frameId}.jpg`;
+    const filepath = path.join(this._sessionDir, filename);
+    fs.writeFileSync(filepath, data);
+    this._sessionFrameCount++;
+    return filepath;
   }
 
   addFrame(entry: FrameEntry): void {
