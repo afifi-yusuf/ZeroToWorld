@@ -19,6 +19,9 @@ scene.mjcf
 assets/mujoco_menagerie/
 sim-server/assets/mujoco_menagerie/
 
+# Relay session captures (large .ply, COLMAP DBs — do not push)
+relay-server/captures/
+
 # Misc
 .DS_Store
 .cursor/
