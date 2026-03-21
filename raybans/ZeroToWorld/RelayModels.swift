@@ -29,6 +29,12 @@ struct TranscriptResponse: Codable {
 
 // MARK: - Health
 
+struct HealthCapturePayload: Codable {
+    let active: Bool
+    let sessionId: String?
+    let framesWritten: Int?
+}
+
 struct HealthResponse: Codable {
     let status: String
     let uptimeS: Double
@@ -38,6 +44,8 @@ struct HealthResponse: Codable {
     let transcriptSubscribers: Int
     let ttsSubscribers: Int
     let ttsIngested: Int
+    /// Omitted on older relays; treat as nil = no capture field
+    let capture: HealthCapturePayload?
 }
 
 // MARK: - TTS

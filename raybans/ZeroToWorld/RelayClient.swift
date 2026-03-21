@@ -14,6 +14,8 @@ actor RelayClient {
     private let frameURL: URL
     private let transcriptURL: URL
     private let healthURL: URL
+    private let captureSessionStartURL: URL
+    private let captureSessionStopURL: URL
     private let ttsWsURL: URL
     private let session: URLSession
     private let encoder = JSONEncoder()
@@ -29,10 +31,13 @@ actor RelayClient {
         self.frameURL = URL(string: "\(base)/ingest/frame")!
         self.transcriptURL = URL(string: "\(base)/ingest/transcript")!
         self.healthURL = URL(string: "\(base)/health")!
+        self.captureSessionStartURL = URL(string: "\(base)/ingest/session/start")!
+        self.captureSessionStopURL = URL(string: "\(base)/ingest/session/stop")!
         self.ttsWsURL = URL(string: "ws://\(host):\(port)/ws/tts")!
         let config = URLSessionConfiguration.default
-        config.timeoutIntervalForRequest = 5
-        // LAN IPs must not go over cellular; iOS may report "offline" if it tries.
+        // Same LAN-only policy that worked for ingest / training: Wi‑Fi only, no multipath/cellular tricks.
+        config.timeoutIntervalForRequest = 15
+        config.timeoutIntervalForResource = 120
         config.waitsForConnectivity = false
         config.allowsCellularAccess = false
         self.session = URLSession(configuration: config)
@@ -50,6 +55,8 @@ actor RelayClient {
         self.frameURL = URL(string: "\(base)/ingest/frame")!
         self.transcriptURL = URL(string: "\(base)/ingest/transcript")!
         self.healthURL = URL(string: "\(base)/health")!
+        self.captureSessionStartURL = URL(string: "\(base)/ingest/session/start")!
+        self.captureSessionStopURL = URL(string: "\(base)/ingest/session/stop")!
         self.ttsWsURL = URL(string: "ws://\(host):\(port)/ws/tts")!
         configuration.waitsForConnectivity = false
         configuration.allowsCellularAccess = false
@@ -121,6 +128,28 @@ actor RelayClient {
 
         await setConnected(true)
         return try decoder.decode(HealthResponse.self, from: data)
+    }
+
+    // MARK: - Disk capture (COLMAP sessions on relay)
+
+    /// Tells the relay to save every ingested frame under `captures/<id>/images/`.
+    func startDiskCaptureSession(customSessionId: String? = nil) async throws {
+        var request = URLRequest(url: captureSessionStartURL)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        struct Body: Encodable {
+            let sessionId: String?
+        }
+        request.httpBody = try encoder.encode(Body(sessionId: customSessionId))
+        let (data, response) = try await session.data(for: request)
+        try Self.validateHTTP(response, data: data)
+    }
+
+    func stopDiskCaptureSession() async throws {
+        var request = URLRequest(url: captureSessionStopURL)
+        request.httpMethod = "POST"
+        let (data, response) = try await session.data(for: request)
+        try Self.validateHTTP(response, data: data)
     }
 
     // MARK: - TTS WebSocket Listener

@@ -1,0 +1,9 @@
+# msplat (PyPI) only ships wheels for Python 3.12 and 3.13 (not 3.11, not 3.14+ yet).
+# Also requires: macOS 14+ on Apple Silicon (arm64).
+#
+# If you use Python 3.14, pip will show "No matching distribution" — use 3.12 or 3.13:
+#   brew install python@3.13
+#   cd ZeroToWorld && /opt/homebrew/bin/python3.13 -m venv .venv-msplat
+#   source .venv-msplat/bin/activate && pip install -U pip && pip install -r scripts/requirements-train.txt
+msplat>=1.1.0
+numpy>=1.26.0

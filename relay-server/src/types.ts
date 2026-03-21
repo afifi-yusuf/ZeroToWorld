@@ -58,4 +58,6 @@ export interface HealthResponse {
   transcriptSubscribers: number;
   ttsSubscribers: number;
   ttsIngested: number;
+  /** Disk capture session (COLMAP training) — present when a session is active */
+  capture?: { active: true; sessionId: string; framesWritten: number } | { active: false };
 }

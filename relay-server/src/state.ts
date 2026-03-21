@@ -1,4 +1,5 @@
 import { TranscriptSegment, FrameEntry, FrameMeta, WsTtsMessage } from "./types";
+import { resetCaptureSessionState } from "./capture";
 
 export class RingBuffer<T> {
   private buffer: T[] = [];
@@ -104,6 +105,7 @@ export class RelayState {
     this._framesIngested = 0;
     this._transcriptsIngested = 0;
     this._ttsIngested = 0;
+    resetCaptureSessionState();
   }
 }
 

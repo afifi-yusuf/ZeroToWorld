@@ -43,7 +43,7 @@ final class ZeroToWorldSessionViewModelTests: XCTestCase {
         stubHealthOK()
         let vm = ZeroToWorldSessionViewModel()
         await vm.startSession(urlSessionConfiguration: MockURLProtocol.testConfiguration)
-        vm.stopSession()
+        await vm.stopSession()
 
         XCTAssertFalse(vm.isActive)
         XCTAssertFalse(vm.relayConnected)
@@ -91,6 +91,12 @@ final class ZeroToWorldSessionViewModelTests: XCTestCase {
         MockURLProtocol.handler = { request in
             if request.url?.path == "/health" {
                 return (self.healthJSON, MockURLProtocol.response(url: request.url!))
+            }
+            if request.url?.path == "/ingest/session/start" {
+                let json = """
+                {"sessionId":"mock","dir":"/tmp","message":"ok"}
+                """.data(using: .utf8)!
+                return (json, MockURLProtocol.response(url: request.url!))
             }
             requestCount.increment()
             let json = """
@@ -148,20 +154,55 @@ final class ZeroToWorldSessionViewModelTests: XCTestCase {
         XCTAssertNil(vm.errorMessage)
     }
 
+    func testDiskCaptureStartFailureSetsErrorMessage() async throws {
+        MockURLProtocol.handler = { request in
+            if request.url?.path == "/health" {
+                let json = """
+                {"status":"ok","uptimeS":0,"framesIngested":0,"transcriptsIngested":0,"frameSubscribers":0,"transcriptSubscribers":0,"ttsSubscribers":0,"ttsIngested":0,"capture":{"active":false}}
+                """.data(using: .utf8)!
+                return (json, MockURLProtocol.response(url: request.url!))
+            }
+            if request.url?.path == "/ingest/session/start" {
+                let body = "{\"error\":\"busy\"}".data(using: .utf8)!
+                return (body, MockURLProtocol.response(url: request.url!, statusCode: 500))
+            }
+            throw URLError(.badURL)
+        }
+        let vm = ZeroToWorldSessionViewModel()
+        await vm.startSession(urlSessionConfiguration: MockURLProtocol.testConfiguration)
+        XCTAssertNotNil(vm.errorMessage)
+        XCTAssertTrue(vm.errorMessage!.contains("frame capture"))
+    }
+
     // MARK: - Helpers
 
     private var healthJSON: Data {
         """
-        {"status":"ok","uptimeS":0,"framesIngested":0,"transcriptsIngested":0,"frameSubscribers":0,"transcriptSubscribers":0,"ttsSubscribers":0,"ttsIngested":0}
+        {"status":"ok","uptimeS":0,"framesIngested":0,"transcriptsIngested":0,"frameSubscribers":0,"transcriptSubscribers":0,"ttsSubscribers":0,"ttsIngested":0,"capture":{"active":false}}
         """.data(using: .utf8)!
     }
 
     private func stubHealthOK() {
         MockURLProtocol.handler = { request in
-            let json = """
-            {"status":"ok","uptimeS":0,"framesIngested":0,"transcriptsIngested":0,"frameSubscribers":0,"transcriptSubscribers":0,"ttsSubscribers":0,"ttsIngested":0}
-            """.data(using: .utf8)!
-            return (json, MockURLProtocol.response(url: request.url!))
+            switch request.url?.path {
+            case "/health":
+                let json = """
+                {"status":"ok","uptimeS":0,"framesIngested":0,"transcriptsIngested":0,"frameSubscribers":0,"transcriptSubscribers":0,"ttsSubscribers":0,"ttsIngested":0,"capture":{"active":false}}
+                """.data(using: .utf8)!
+                return (json, MockURLProtocol.response(url: request.url!))
+            case "/ingest/session/start":
+                let json = """
+                {"sessionId":"mock-session","dir":"/tmp","message":"ok"}
+                """.data(using: .utf8)!
+                return (json, MockURLProtocol.response(url: request.url!))
+            case "/ingest/session/stop":
+                let json = """
+                {"ok":true,"previousSessionId":"mock-session","framesWritten":0}
+                """.data(using: .utf8)!
+                return (json, MockURLProtocol.response(url: request.url!))
+            default:
+                throw URLError(.badURL)
+            }
         }
     }
 
@@ -169,7 +210,19 @@ final class ZeroToWorldSessionViewModelTests: XCTestCase {
         MockURLProtocol.handler = { request in
             if request.url?.path == "/health" {
                 let json = """
-                {"status":"ok","uptimeS":0,"framesIngested":0,"transcriptsIngested":0,"frameSubscribers":0,"transcriptSubscribers":0,"ttsSubscribers":0,"ttsIngested":0}
+                {"status":"ok","uptimeS":0,"framesIngested":0,"transcriptsIngested":0,"frameSubscribers":0,"transcriptSubscribers":0,"ttsSubscribers":0,"ttsIngested":0,"capture":{"active":false}}
+                """.data(using: .utf8)!
+                return (json, MockURLProtocol.response(url: request.url!))
+            }
+            if request.url?.path == "/ingest/session/start" {
+                let json = """
+                {"sessionId":"mock-session","dir":"/tmp","message":"ok"}
+                """.data(using: .utf8)!
+                return (json, MockURLProtocol.response(url: request.url!))
+            }
+            if request.url?.path == "/ingest/session/stop" {
+                let json = """
+                {"ok":true,"previousSessionId":"mock-session","framesWritten":0}
                 """.data(using: .utf8)!
                 return (json, MockURLProtocol.response(url: request.url!))
             }

@@ -4,29 +4,53 @@ struct ContentView: View {
     @ObservedObject var vm: ZeroToWorldSessionViewModel
     @AppStorage("SelectedVoiceID") private var selectedVoiceID: String = "TxWZERZ5Hc6h9dGxVmXa"
 
-    // Reads from Info.plist first so values are editable in Xcode.
-    private var relayHost: String {
-        let infoValue = (Bundle.main.object(forInfoDictionaryKey: "RelayHost") as? String)?
+    // Reads from Info.plist / env. If RelayHost is `10.0.0.1:8420`, port is taken from the host string
+    // so we never build `http://10.0.0.1:8420:8420` (which fails with "could not connect").
+    private var relayHost: String { relayEndpoint.host }
+    private var relayPort: Int { relayEndpoint.port }
+
+    private var relayEndpoint: (host: String, port: Int) {
+        let portFromPlist: Int = {
+            if let number = Bundle.main.object(forInfoDictionaryKey: "RelayPort") as? NSNumber {
+                return number.intValue
+            }
+            if let text = Bundle.main.object(forInfoDictionaryKey: "RelayPort") as? String,
+               let port = Int(text) {
+                return port
+            }
+            if let envPort = Int(ProcessInfo.processInfo.environment["RELAY_PORT"] ?? "") {
+                return envPort
+            }
+            return 8420
+        }()
+
+        var raw = (Bundle.main.object(forInfoDictionaryKey: "RelayHost") as? String)?
             .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-        if !infoValue.isEmpty { return infoValue }
+        if raw.isEmpty {
+            raw = (ProcessInfo.processInfo.environment["RELAY_HOST"] ?? "")
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+        if raw.isEmpty {
+            return ("10.154.16.250", portFromPlist)
+        }
 
-        let envValue = (ProcessInfo.processInfo.environment["RELAY_HOST"] ?? "")
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-        return envValue.isEmpty ? "10.154.16.250" : envValue
-    }
+        var h = raw
+        for prefix in ["http://", "https://"] {
+            if h.lowercased().hasPrefix(prefix) {
+                h = String(h.dropFirst(prefix.count))
+                break
+            }
+        }
+        h = h.trimmingCharacters(in: .whitespacesAndNewlines)
+        if let slash = h.firstIndex(of: "/") {
+            h = String(h[..<slash])
+        }
 
-    private var relayPort: Int {
-        if let number = Bundle.main.object(forInfoDictionaryKey: "RelayPort") as? NSNumber {
-            return number.intValue
+        let comps = h.split(separator: ":")
+        if comps.count == 2, let p = Int(comps[1]), (1...65535).contains(p) {
+            return (String(comps[0]), p)
         }
-        if let text = Bundle.main.object(forInfoDictionaryKey: "RelayPort") as? String,
-           let port = Int(text) {
-            return port
-        }
-        if let envPort = Int(ProcessInfo.processInfo.environment["RELAY_PORT"] ?? "") {
-            return envPort
-        }
-        return 8420
+        return (h, portFromPlist)
     }
 
     var body: some View {
@@ -234,7 +258,7 @@ struct ContentView: View {
                 ) {
                     Task { @MainActor in
                         if vm.isActive {
-                            vm.stopSession()
+                            await vm.stopSession()
                         } else {
                             await vm.startSession(host: relayHost, port: relayPort)
                         }

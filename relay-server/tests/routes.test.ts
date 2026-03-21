@@ -1,4 +1,7 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import fs from "fs/promises";
+import os from "os";
+import path from "path";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import request from "supertest";
 import { createServer } from "../src/index";
 import { state } from "../src/state";
@@ -25,6 +28,56 @@ describe("REST endpoints", () => {
       expect(res.body).toHaveProperty("transcriptSubscribers");
       expect(res.body).toHaveProperty("ttsSubscribers");
       expect(res.body).toHaveProperty("ttsIngested");
+      expect(res.body.capture).toEqual({ active: false });
+    });
+  });
+
+  describe("capture session (disk)", () => {
+    let tmpCaptures: string;
+
+    beforeEach(() => {
+      tmpCaptures = path.join(
+        os.tmpdir(),
+        `relay-capture-${Date.now()}-${Math.random().toString(36).slice(2)}`
+      );
+      process.env.CAPTURES_DIR = tmpCaptures;
+      state.reset();
+      resetClients();
+      ({ app } = createServer());
+    });
+
+    afterEach(async () => {
+      delete process.env.CAPTURES_DIR;
+      await fs.rm(tmpCaptures, { recursive: true, force: true });
+    });
+
+    it("POST /ingest/session/start, frame, and GET /captures", async () => {
+      const start = await request(app).post("/ingest/session/start").send({});
+      expect(start.status).toBe(200);
+      const sid = start.body.sessionId as string;
+      expect(sid).toBeTruthy();
+
+      const jpeg = Buffer.from([0xff, 0xd8, 0xff, 0xd9]);
+      const frame = await request(app).post("/ingest/frame").attach("frame", jpeg, "f.jpg");
+      expect(frame.status).toBe(200);
+
+      await new Promise((r) => setTimeout(r, 100));
+
+      const fpath = path.join(tmpCaptures, sid, "images", "frame_000001.jpg");
+      await expect(fs.stat(fpath)).resolves.toBeDefined();
+
+      const list = await request(app).get("/captures");
+      expect(list.status).toBe(200);
+      expect(list.body.sessions).toContain(sid);
+
+      const info = await request(app).get(`/captures/${sid}`);
+      expect(info.status).toBe(200);
+      expect(info.body.imageCount).toBe(1);
+      expect(info.body.hasSparse).toBe(false);
+
+      const stop = await request(app).post("/ingest/session/stop").send();
+      expect(stop.status).toBe(200);
+      expect(stop.body.framesWritten).toBe(1);
     });
   });
 

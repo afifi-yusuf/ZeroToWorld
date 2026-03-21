@@ -59,11 +59,22 @@ final class ZeroToWorldSessionViewModel: ObservableObject {
         isActive = true
         errorMessage = nil
 
-        // 1. Health check first — avoids a late failure overwriting state after frames already succeeded.
+        // 1. Health check, then start disk capture (same window as this app session — no curl).
+        var relayReachable = false
         do {
             _ = try await client.health()
+            relayReachable = true
         } catch {
-            self.errorMessage = "Relay offline at \(host):\(port): \(error.localizedDescription)"
+            self.errorMessage =
+                "Relay offline at http://\(host):\(port) (\(error.localizedDescription))"
+        }
+        if relayReachable {
+            do {
+                try await client.startDiskCaptureSession()
+                print("[ZeroToWorld] Relay disk capture session started")
+            } catch {
+                self.errorMessage = "Relay OK but could not start frame capture: \(error.localizedDescription)"
+            }
         }
 
         // 0. TTS WebSocket (after health so Local Network / Wi‑Fi path is already exercised)
@@ -127,15 +138,13 @@ final class ZeroToWorldSessionViewModel: ObservableObject {
         speechTranscriber.start()
     }
 
-    func stopSession() {
+    func stopSession() async {
         flushTimer?.invalidate()
         flushTimer = nil
         lastFlushedTranscript = ""
         speechTranscriber.stop()
         ttsPlayer.stop()
-        if let relay {
-            Task { await relay.stopListening() }
-        }
+        let relayToClose = relay
         relay = nil
         isActive = false
         relayConnected = false
@@ -144,6 +153,15 @@ final class ZeroToWorldSessionViewModel: ObservableObject {
         userTranscript = ""
         latestFrame = nil
         errorMessage = nil
+        if let relayToClose {
+            do {
+                try await relayToClose.stopDiskCaptureSession()
+                print("[ZeroToWorld] Relay disk capture session stopped")
+            } catch {
+                print("[ZeroToWorld] Disk capture stop failed: \(error)")
+            }
+            await relayToClose.stopListening()
+        }
     }
 
 

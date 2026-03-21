@@ -97,6 +97,17 @@ final class RelayModelsTests: XCTestCase {
         XCTAssertEqual(response.transcriptSubscribers, 1)
         XCTAssertEqual(response.ttsSubscribers, 3)
         XCTAssertEqual(response.ttsIngested, 7)
+        XCTAssertNil(response.capture)
+    }
+
+    func testHealthResponseDecodesCaptureActive() throws {
+        let json = """
+        {"status":"ok","uptimeS":1,"framesIngested":0,"transcriptsIngested":0,"frameSubscribers":0,"transcriptSubscribers":0,"ttsSubscribers":0,"ttsIngested":0,"capture":{"active":true,"sessionId":"abc","framesWritten":42}}
+        """.data(using: .utf8)!
+        let response = try JSONDecoder().decode(HealthResponse.self, from: json)
+        XCTAssertEqual(response.capture?.active, true)
+        XCTAssertEqual(response.capture?.sessionId, "abc")
+        XCTAssertEqual(response.capture?.framesWritten, 42)
     }
 
     // MARK: - TtsWsMessage

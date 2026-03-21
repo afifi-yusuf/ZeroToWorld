@@ -31,7 +31,7 @@ final class RelayClientTests: XCTestCase {
             XCTAssertEqual(request.httpMethod, "GET")
 
             let json = """
-            {"status":"ok","uptimeS":42.0,"framesIngested":3,"transcriptsIngested":1,"frameSubscribers":0,"transcriptSubscribers":0,"ttsSubscribers":0,"ttsIngested":0}
+            {"status":"ok","uptimeS":42.0,"framesIngested":3,"transcriptsIngested":1,"frameSubscribers":0,"transcriptSubscribers":0,"ttsSubscribers":0,"ttsIngested":0,"capture":{"active":false}}
             """.data(using: .utf8)!
             return (json, MockURLProtocol.response(url: request.url!))
         }
@@ -47,7 +47,7 @@ final class RelayClientTests: XCTestCase {
 
         MockURLProtocol.handler = { request in
             let json = """
-            {"status":"ok","uptimeS":0,"framesIngested":0,"transcriptsIngested":0,"frameSubscribers":0,"transcriptSubscribers":0,"ttsSubscribers":0,"ttsIngested":0}
+            {"status":"ok","uptimeS":0,"framesIngested":0,"transcriptsIngested":0,"frameSubscribers":0,"transcriptSubscribers":0,"ttsSubscribers":0,"ttsIngested":0,"capture":{"active":false}}
             """.data(using: .utf8)!
             return (json, MockURLProtocol.response(url: request.url!))
         }
@@ -207,5 +207,32 @@ final class RelayClientTests: XCTestCase {
 
         _ = try await client.pushTranscript(text: "hi")
         XCTAssertTrue(status.isConnected)
+    }
+
+    // MARK: - Disk capture
+
+    func testStartDiskCaptureSessionSendsPOST() async throws {
+        MockURLProtocol.handler = { request in
+            XCTAssertEqual(request.url?.path, "/ingest/session/start")
+            XCTAssertEqual(request.httpMethod, "POST")
+            XCTAssertEqual(request.value(forHTTPHeaderField: "Content-Type"), "application/json")
+            let json = """
+            {"sessionId":"sess1","dir":"/tmp","message":"ok"}
+            """.data(using: .utf8)!
+            return (json, MockURLProtocol.response(url: request.url!))
+        }
+        try await client.startDiskCaptureSession()
+    }
+
+    func testStopDiskCaptureSessionSendsPOST() async throws {
+        MockURLProtocol.handler = { request in
+            XCTAssertEqual(request.url?.path, "/ingest/session/stop")
+            XCTAssertEqual(request.httpMethod, "POST")
+            let json = """
+            {"ok":true,"previousSessionId":"sess1","framesWritten":10}
+            """.data(using: .utf8)!
+            return (json, MockURLProtocol.response(url: request.url!))
+        }
+        try await client.stopDiskCaptureSession()
     }
 }

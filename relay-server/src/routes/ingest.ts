@@ -2,12 +2,45 @@ import { Router, Request, Response, NextFunction } from "express";
 import multer, { MulterError } from "multer";
 import { v4 as uuidv4 } from "uuid";
 import { state } from "../state";
+import {
+  startCaptureSession,
+  stopCaptureSession,
+  getActiveCaptureSession,
+  persistFrameToDisk,
+} from "../capture";
 import { broadcastFrame, broadcastTranscript, broadcastTts } from "../ws/handler";
 import { forwardTranscript } from "../forward/polymarket";
 import { FrameEntry, WsFrameMessage, WsTranscriptMessage, WsTtsMessage, TranscriptSegment } from "../types";
 
 const router = Router();
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
+
+// POST /ingest/session/start — begin persisting frames to captures/<id>/images/
+router.post("/session/start", async (req, res) => {
+  try {
+    const body = req.body as { sessionId?: string } | undefined;
+    const { sessionId, dir } = await startCaptureSession(body?.sessionId);
+    console.log(`[capture] session started id=${sessionId} dir=${dir}`);
+    res.status(200).json({ sessionId, dir, message: "Frames will be saved under captures/<sessionId>/images/" });
+  } catch (e) {
+    console.error("[capture] session/start failed:", e);
+    res.status(500).json({ error: String(e) });
+  }
+});
+
+// POST /ingest/session/stop — stop persisting (files remain on disk)
+router.post("/session/stop", (_req, res) => {
+  const prev = getActiveCaptureSession();
+  stopCaptureSession();
+  console.log(`[capture] session stopped (was ${prev?.sessionId ?? "none"})`);
+  res.status(200).json({ ok: true, previousSessionId: prev?.sessionId ?? null, framesWritten: prev?.framesWritten ?? 0 });
+});
+
+// GET /ingest/session — current capture session status
+router.get("/session", (_req, res) => {
+  const active = getActiveCaptureSession();
+  res.json({ active: active !== null, ...active });
+});
 
 // POST /ingest/frame — multipart JPEG
 router.post("/frame", upload.single("frame"), (req, res) => {
@@ -28,6 +61,8 @@ router.post("/frame", upload.single("frame"), (req, res) => {
   };
 
   state.addFrame(entry);
+
+  void persistFrameToDisk(data).catch((err) => console.error("[capture] persist frame failed:", err));
 
   const from = req.ip || req.socket.remoteAddress || "?";
   console.log(
