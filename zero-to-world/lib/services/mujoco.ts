@@ -13,8 +13,8 @@ export function generateMJCF(scene: SceneJSON): string {
     .join("\n");
 
   return `<mujoco model="zero-to-world-hackathon-room">
-  <!-- The Spot quadruped robot - loaded from MuJoCo Menagerie -->
-  <include file="mujoco_menagerie/boston_dynamics_spot/spot.xml"/>
+  <!-- The Unitree G1 Humanoid robot - loaded from MuJoCo Menagerie -->
+  <include file="mujoco_menagerie/unitree_g1/g1.xml"/>
   
   <worldbody>
     <!-- Tracking camera so default viewport doesn't lose Spot -->
@@ -32,6 +32,4 @@ ${obstaclesBodies}
 </mujoco>`;
 }
 
-function sanitize(label: string): string {
-  return label.replace(/[^a-zA-Z0-9_]/g, "_").toLowerCase();
-}
+// Busted Turbopack Cache

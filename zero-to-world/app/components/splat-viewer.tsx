@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, forwardRef, useImperativeHandle } from "react";
 import * as THREE from "three";
 import { RobotOverlay } from "./robot-overlay";
 import type { SceneJSON } from "@/lib/types";
@@ -12,14 +12,57 @@ interface SplatViewerProps {
   className?: string;
 }
 
-export function SplatViewer({ plyUrl, sceneJSON = null, showRobot = false, className = "" }: SplatViewerProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
+export interface SplatViewerHandle {
+  capturePano: () => Promise<string[]>;
+}
+
+export const SplatViewer = forwardRef<SplatViewerHandle, SplatViewerProps>(
+  ({ plyUrl, sceneJSON = null, showRobot = false, className = "" }, ref) => {
+    const containerRef = useRef<HTMLDivElement>(null);
   const viewerRef = useRef<unknown>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
   const [threeScene, setThreeScene] = useState<THREE.Scene | null>(null);
+
+  useImperativeHandle(ref, () => ({
+    capturePano: async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const v = viewerRef.current as any;
+      if (!v || !v.camera || !v.renderer) return [];
+
+      const frames: string[] = [];
+      const cam = v.camera as THREE.PerspectiveCamera;
+      const originalPosition = cam.position.clone();
+      const originalRotation = cam.rotation.clone();
+
+      const numFrames = 6;
+      const radius = 2.0; // 2m orbit ring
+
+      for (let i = 0; i < numFrames; i++) {
+        const angle = (i / numFrames) * Math.PI * 2;
+        // The splat uses Y=-1 for upright alignment roughly
+        cam.position.set(Math.sin(angle) * radius, -1, Math.cos(angle) * radius);
+        cam.lookAt(0, -1, 0);
+        cam.updateMatrixWorld();
+
+        v.renderer.render(v.threeScene || v.scene, cam);
+        frames.push(v.renderer.domElement.toDataURL("image/jpeg", 0.6));
+
+        // Let the javascript runtime breathe
+        await new Promise((r) => setTimeout(r, 60));
+      }
+
+      // Restore camera state so the user doesn't notice the whip-pan
+      cam.position.copy(originalPosition);
+      cam.rotation.copy(originalRotation);
+      cam.updateMatrixWorld();
+      v.renderer.render(v.threeScene || v.scene, cam);
+
+      return frames;
+    },
+  }));
 
   useEffect(() => {
     if (!containerRef.current || !plyUrl) return;
@@ -176,4 +219,4 @@ export function SplatViewer({ plyUrl, sceneJSON = null, showRobot = false, class
       )}
     </div>
   );
-}
+});

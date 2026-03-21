@@ -1,12 +1,10 @@
 "use client";
 
-import { useCallback, useState, useEffect } from "react";
+import { useCallback, useState, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 import { usePipelineStore } from "@/lib/stores/pipeline-store";
 import { usePipeline } from "@/lib/hooks/use-pipeline";
-import { useRelay } from "@/lib/hooks/use-relay";
 import { PipelineProgress } from "@/app/components/pipeline-progress";
-import { FrameFeed } from "@/app/components/frame-feed";
 import { SceneLabels } from "@/app/components/scene-labels";
 import { MjcfViewer } from "@/app/components/mjcf-viewer";
 
@@ -37,7 +35,6 @@ export default function Home() {
     sceneJSON,
     mjcfXml,
     error,
-    frames,
     setSession,
     setStage,
     setPlyUrl,
@@ -47,12 +44,11 @@ export default function Home() {
   // Subscribe to pipeline status updates
   usePipeline(sessionId);
 
-  // Subscribe to relay WebSocket for live frames
-  useRelay();
-
   // Demo timer
   const [elapsed, setElapsed] = useState(0);
   const [startTime, setStartTime] = useState<number | null>(null);
+
+  const splatRef = useRef<unknown>(null);
 
   useEffect(() => {
     if (!startTime) return;
@@ -87,17 +83,25 @@ export default function Home() {
   const analyzeViewport = useCallback(async () => {
     if (!sessionId) return;
     setIsAnalyzing(true);
-    setStage("LABELLING", 50);
+    setStage("LABELLING", 20); // Switch to 20% while rotating camera
     try {
-      const canvas = document.querySelector('canvas');
-      if (!canvas) throw new Error("Could not locate WebGL Canvas");
+      let frames: string[] = [];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const splatViewer = splatRef.current as any;
       
-      const frame = canvas.toDataURL("image/jpeg", 0.8);
+      if (splatViewer && splatViewer.capturePano) {
+        frames = await splatViewer.capturePano();
+      } else {
+        const canvas = document.querySelector('canvas');
+        if (!canvas) throw new Error("Could not locate WebGL Canvas");
+        frames = [canvas.toDataURL("image/jpeg", 0.8)];
+      }
       
+      setStage("LABELLING", 50); // Send to Gemini
       const res = await fetch("/api/analyze-splat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sessionId, frames: [frame] }),
+        body: JSON.stringify({ sessionId, frames }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
@@ -216,15 +220,8 @@ export default function Home() {
       {/* ── Main Grid (active session) ──────────── */}
       {stage && (
         <main className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-3 p-4 animate-fade-in">
-          {/* Left — Live Feed (3 cols) */}
-          <div className="lg:col-span-3 flex flex-col gap-3">
-            <div className="glass rounded-xl p-4">
-              <FrameFeed frames={frames} />
-            </div>
-          </div>
-
-          {/* Center — Pipeline + 3D Viewer (6 cols) */}
-          <div className="lg:col-span-5 flex flex-col gap-3">
+          {/* Left — Pipeline + 3D Viewer (8 cols) */}
+          <div className="lg:col-span-8 flex flex-col gap-3">
             <div className="glass rounded-xl p-4">
               <PipelineProgress stage={stage} percent={percent} />
             </div>
@@ -243,6 +240,7 @@ export default function Home() {
             {plyUrl && (
               <div className="animate-slide-up">
                 <SplatViewer
+                  ref={splatRef as React.Ref<any>}
                   plyUrl={plyUrl}
                   sceneJSON={sceneJSON}
                   showRobot={showTraining}

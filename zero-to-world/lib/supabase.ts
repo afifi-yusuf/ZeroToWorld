@@ -1,27 +1,5 @@
-import { put, list } from "@vercel/blob";
+import { put } from "@vercel/blob";
 import type { SessionRow, PipelineStage } from "@/lib/types";
-
-// --- Frame storage helpers ---
-
-export async function uploadFrame(
-  sessionId: string,
-  timestamp: number,
-  buffer: Buffer
-): Promise<string> {
-  const { url } = await put(
-    `sessions/${sessionId}/${timestamp}.jpg`,
-    buffer,
-    { access: "public", contentType: "image/jpeg", addRandomSuffix: false, allowOverwrite: true }
-  );
-  return url;
-}
-
-export async function listFrameUrls(sessionId: string): Promise<string[]> {
-  const { blobs } = await list({ prefix: `sessions/${sessionId}/` });
-  return blobs
-    .filter((b) => b.pathname.endsWith(".jpg"))
-    .map((b) => b.url);
-}
 
 // --- Session state helpers ---
 // Uses in-memory cache as the primary store (fast reads/writes),

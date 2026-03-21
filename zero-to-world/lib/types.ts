@@ -29,7 +29,7 @@ export interface SessionRow {
   ply_url: string | null;
   scene_json: SceneJSON | null;
   mjcf_xml: string | null;
-  sim_frames: string[];  // URLs of rendered MuJoCo frames for playback
+
   created_at: string;
   error: string | null;
 }
