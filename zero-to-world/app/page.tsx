@@ -9,7 +9,6 @@ import { PipelineProgress } from "@/app/components/pipeline-progress";
 import { FrameFeed } from "@/app/components/frame-feed";
 import { SceneLabels } from "@/app/components/scene-labels";
 import { MjcfViewer } from "@/app/components/mjcf-viewer";
-import { RobotTraining } from "@/app/components/robot-training";
 
 // Dynamic import SplatViewer to avoid SSR issues with Three.js
 const SplatViewer = dynamic(
@@ -266,7 +265,6 @@ export default function Home() {
             <div className="glass rounded-xl p-4">
               <MjcfViewer mjcfXml={mjcfXml} />
             </div>
-            <RobotTraining active={showTraining} />
           </div>
         </main>
       )}

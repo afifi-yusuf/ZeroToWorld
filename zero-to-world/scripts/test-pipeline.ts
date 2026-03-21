@@ -67,15 +67,14 @@ async function runPipelineLocally(frameUrls: string[]) {
   const sceneJSON = await analyseScene(frameUrls);
 
   console.log("   ✓ Scene analysis complete:");
-  console.log(`     Floor: ${sceneJSON.floor_plane.width_m}m × ${sceneJSON.floor_plane.depth_m}m`);
-  console.log(`     Walls: ${sceneJSON.walls.length}`);
-  console.log(`     Obstacles: ${sceneJSON.obstacles.length}`);
-  sceneJSON.obstacles.forEach((o) => {
+  console.log(`     Floor: ${sceneJSON.floor.width_m}m × ${sceneJSON.floor.depth_m}m`);
+  console.log(`     Obstacles: ${sceneJSON.obstacles?.length}`);
+  sceneJSON.obstacles?.forEach((o) => {
     console.log(
       `       • ${o.label} at (${o.x}, ${o.y}) — ${o.width_m}×${o.depth_m}×${o.height_m}m`
     );
   });
-  console.log(`     Navigable area: ${sceneJSON.navigable_area_sqm} m²\n`);
+  console.log(`     Robot Spawn: ${sceneJSON.robot_spawn.description}\n`);
 
   // --- Stage 3: MuJoCo generation ---
   console.log("⚙️  Stage 3: MuJoCo Scene Generation");

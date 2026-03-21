@@ -22,20 +22,20 @@ export function SceneLabels({ sceneJSON }: { sceneJSON: SceneJSON | null }) {
         <div className="bg-white/[0.04] rounded-lg p-3 border border-white/5">
           <div className="text-xs text-white/40 font-mono">Floor</div>
           <div className="text-sm font-semibold text-white/80">
-            {sceneJSON.floor_plane.width_m}m × {sceneJSON.floor_plane.depth_m}m
+            {sceneJSON.floor?.width_m}m × {sceneJSON.floor?.depth_m}m
           </div>
         </div>
         <div className="bg-white/[0.04] rounded-lg p-3 border border-white/5">
-          <div className="text-xs text-white/40 font-mono">Nav Area</div>
+          <div className="text-xs text-white/40 font-mono">Ceiling</div>
           <div className="text-sm font-semibold text-white/80">
-            {sceneJSON.navigable_area_sqm} m²
+            {sceneJSON.ceiling_height_m}m
           </div>
         </div>
       </div>
 
       {/* Obstacle cards */}
       <div className="grid grid-cols-2 gap-2">
-        {sceneJSON.obstacles.map((o, i) => (
+        {sceneJSON.obstacles?.map((o, i) => (
           <div
             key={i}
             className="bg-white/[0.04] rounded-lg p-2.5 border border-white/5"

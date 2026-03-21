@@ -3,44 +3,46 @@ import type { SceneJSON } from "@/lib/types";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
-const SCENE_PROMPT = `You are a robotics scene analyst for sim-to-real transfer.
-Analyse these room images and return ONLY valid JSON (no markdown, no code fences):
+const SCENE_PROMPT = `You are a robotics scene analyst for a quadruped robot navigation system.
+Analyse these images of a room and return ONLY valid JSON in this exact schema:
+
 {
-  "floor_plane": { "width_m": <number>, "depth_m": <number> },
-  "walls": [{ "x": <number>, "y": <number>, "width": <number>, "height": <number> }],
+  "floor": { "width_m": number, "depth_m": number },
+  "ceiling_height_m": number,
+  "robot_spawn": { "x": number, "y": number, "description": "back of room" },
+  "navigation_goal": { "x": number, "y": number, "description": "front stage" },
   "obstacles": [
-    {
-      "label": "<string e.g. desk, chair, couch>",
-      "x": <center x in meters from room origin>,
-      "y": <center y in meters from room origin>,
-      "width_m": <number>,
-      "depth_m": <number>,
-      "height_m": <number>
+    { 
+      "label": string,        // e.g. "table", "chair", "speaker_stand"
+      "x": number,            // metres from room centre
+      "y": number,
+      "width_m": number,
+      "depth_m": number,
+      "height_m": number
     }
-  ],
-  "navigable_area_sqm": <number>
+  ]
 }
-Estimate real-world dimensions in meters. Be precise — a robot will navigate this.`;
+
+Use metric estimates. Origin (0,0) is the centre of the room.
+robot_spawn should be at the back (audience end).
+navigation_goal should be the stage at the front.`;
 
 const GEMINI_TIMEOUT_MS = 30_000;
 
 export async function analyseScene(imageUrls: string[]): Promise<SceneJSON> {
-  const modelName = process.env.GEMINI_MODEL || "gemini-2.0-flash";
+  const modelName = process.env.GEMINI_MODEL || "gemini-3.0-flash";
   const model = genAI.getGenerativeModel({ model: modelName });
 
   console.log(`[gemini] Starting scene analysis with model=${modelName}, ${imageUrls.length} frame URLs`);
 
   if (imageUrls.length === 0) {
-    console.warn("[gemini] No frames available — returning synthetic scene");
-    return {
-      floor_plane: { width_m: 5, depth_m: 4 },
-      walls: [
-        { x: 0, y: 2, width: 5, height: 2.5 },
-        { x: 0, y: -2, width: 5, height: 2.5 },
-      ],
-      obstacles: [],
-      navigable_area_sqm: 20,
-    };
+    console.warn("[gemini] No hardware frames available — using hackathon demo fallback frames!");
+    imageUrls = [
+      "https://aatgxvesracwhd9h.public.blob.vercel-storage.com/sessions/test-e2e-1774103577200/1774103577200.jpg",
+      "https://aatgxvesracwhd9h.public.blob.vercel-storage.com/sessions/test-e2e-1774103577200/1774103577730.jpg",
+      "https://aatgxvesracwhd9h.public.blob.vercel-storage.com/sessions/test-e2e-1774103577200/1774103578046.jpg",
+      "https://aatgxvesracwhd9h.public.blob.vercel-storage.com/sessions/test-e2e-1774103577200/1774103578499.jpg"
+    ];
   }
 
   // Fetch images and convert to inline data parts
@@ -74,7 +76,7 @@ export async function analyseScene(imageUrls: string[]): Promise<SceneJSON> {
 
   try {
     const parsed = JSON.parse(cleaned) as SceneJSON;
-    console.log(`[gemini] Parsed: ${parsed.obstacles.length} obstacles, floor ${parsed.floor_plane.width_m}x${parsed.floor_plane.depth_m}m`);
+    console.log(`[gemini] Parsed: ${parsed.obstacles?.length} obstacles, floor ${parsed.floor?.width_m}x${parsed.floor?.depth_m}m`);
     return parsed;
   } catch (parseErr) {
     console.error(`[gemini] JSON parse failed. Raw response:\n${cleaned.slice(0, 500)}`);
