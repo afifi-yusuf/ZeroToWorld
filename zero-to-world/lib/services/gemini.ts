@@ -30,7 +30,7 @@ navigation_goal should be the stage at the front.`;
 const GEMINI_TIMEOUT_MS = 30_000;
 
 export async function analyseScene(imageUrls: string[]): Promise<SceneJSON> {
-  const modelName = process.env.GEMINI_MODEL || "gemini-3.0-flash";
+  const modelName = process.env.GEMINI_MODEL || "gemini-3-flash-preview";
   const model = genAI.getGenerativeModel({ model: modelName });
 
   console.log(`[gemini] Starting scene analysis with model=${modelName}, ${imageUrls.length} frame URLs`);
@@ -46,13 +46,19 @@ export async function analyseScene(imageUrls: string[]): Promise<SceneJSON> {
   }
 
   // Fetch images and convert to inline data parts
-  console.log(`[gemini] Fetching ${Math.min(imageUrls.length, 8)} images...`);
+  console.log(`[gemini] Processing ${Math.min(imageUrls.length, 8)} images...`);
   const imageParts = await Promise.all(
     imageUrls.slice(0, 8).map(async (url, i) => {
-      const res = await fetch(url);
-      const buffer = await res.arrayBuffer();
-      const base64 = Buffer.from(buffer).toString("base64");
-      console.log(`[gemini]   image ${i + 1}: ${(buffer.byteLength / 1024).toFixed(0)} KB`);
+      let base64 = "";
+      if (url.startsWith("data:image/")) {
+        base64 = url.split(",")[1];
+        console.log(`[gemini]   image ${i + 1}: inline WebGL canvas frame`);
+      } else {
+        const res = await fetch(url);
+        const buffer = await res.arrayBuffer();
+        base64 = Buffer.from(buffer).toString("base64");
+        console.log(`[gemini]   image ${i + 1}: ${(buffer.byteLength / 1024).toFixed(0)} KB remote URL`);
+      }
       return {
         inlineData: { data: base64, mimeType: "image/jpeg" },
       };

@@ -40,6 +40,7 @@ export default function Home() {
     frames,
     setSession,
     setStage,
+    setPlyUrl,
     reset,
   } = usePipelineStore();
 
@@ -67,27 +68,49 @@ export default function Home() {
     return `${m}:${sec.toString().padStart(2, "0")}`;
   };
 
-  const startScan = useCallback(() => {
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+
+  const startSession = useCallback(() => {
     reset();
     const id = crypto.randomUUID();
     setSession(id);
-    setStage("SCANNING", 0);
+    
+    // Bypass scanning entirely, go straight to manual Splat analysis
+    setStage("LABELLING", 0);
+    setPlyUrl(
+      process.env.NEXT_PUBLIC_DEMO_PLY_URL || "https://huggingface.co/datasets/dylanebert/3dgs/resolve/main/living_room/point_cloud/iteration_30000/point_cloud.ply"
+    );
     setStartTime(Date.now());
     setElapsed(0);
-  }, [reset, setSession, setStage]);
+  }, [reset, setSession, setStage, setPlyUrl]);
 
-  const endScan = useCallback(async () => {
+  const analyzeViewport = useCallback(async () => {
     if (!sessionId) return;
-    await fetch("/api/ingest/session-end", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ sessionId }),
-    });
-  }, [sessionId]);
+    setIsAnalyzing(true);
+    setStage("LABELLING", 50);
+    try {
+      const canvas = document.querySelector('canvas');
+      if (!canvas) throw new Error("Could not locate WebGL Canvas");
+      
+      const frame = canvas.toDataURL("image/jpeg", 0.8);
+      
+      const res = await fetch("/api/analyze-splat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId, frames: [frame] }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+    } catch (e) {
+      console.error("Analysis Failed:", e);
+    } finally {
+      setIsAnalyzing(false);
+    }
+  }, [sessionId, setStage]);
 
-  const isScanning = stage === "SCANNING";
+  const isAnalyzingStatus = stage === "LABELLING";
   const isProcessing =
-    stage && !["SCANNING", "COMPLETE", "ERROR"].includes(stage);
+    stage && !["LABELLING", "COMPLETE", "ERROR"].includes(stage);
   const isComplete = stage === "COMPLETE";
   const showTraining = stage === "BUILDING_SIM" || stage === "COMPLETE";
 
@@ -123,18 +146,23 @@ export default function Home() {
 
           {!stage && (
             <button
-              onClick={startScan}
+              onClick={startSession}
               className="px-5 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white text-sm font-semibold transition-all shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 active:scale-95"
             >
-              Start Scan
+              Load Demo Room
             </button>
           )}
-          {isScanning && (
+          {isAnalyzingStatus && (
             <button
-              onClick={endScan}
-              className="px-5 py-2 rounded-xl bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white text-sm font-semibold transition-all shadow-lg shadow-red-500/20 active:scale-95"
+              onClick={analyzeViewport}
+              disabled={isAnalyzing}
+              className={`px-5 py-2 rounded-xl text-white text-sm font-semibold transition-all shadow-lg active:scale-95 ${
+                isAnalyzing
+                  ? "bg-white/20 cursor-not-allowed"
+                  : "bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-500 hover:to-teal-500 shadow-teal-500/20 hover:shadow-teal-500/40"
+              }`}
             >
-              End Scan → Process
+              {isAnalyzing ? "Analyzing..." : "Analyze Viewport"}
             </button>
           )}
           {(isComplete || stage === "ERROR") && (
@@ -176,10 +204,10 @@ export default function Home() {
               minutes.
             </p>
             <button
-              onClick={startScan}
+              onClick={startSession}
               className="mt-2 px-8 py-3 rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-semibold text-base transition-all shadow-xl shadow-blue-500/25 hover:shadow-blue-500/40 active:scale-95"
             >
-              Start Scanning →
+              Launch Synthetic Engine →
             </button>
           </div>
         </div>

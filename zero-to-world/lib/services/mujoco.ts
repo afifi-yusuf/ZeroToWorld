@@ -7,7 +7,7 @@ export function generateMJCF(scene: SceneJSON): string {
     .map(
       (o, i) =>
         `    <body name="${sanitize(o.label)}_${i}" pos="${o.x} ${o.y} ${o.height_m / 2}">
-      <geom type="box" size="${o.width_m / 2} ${o.depth_m / 2} ${o.height_m / 2}" rgba="0.6 0.4 0.2 1"/>
+      <geom type="box" size="${o.width_m / 2} ${o.depth_m / 2} ${o.height_m / 2}" rgba="0 0 0 0"/>
     </body>`
     )
     .join("\n");
@@ -21,7 +21,7 @@ export function generateMJCF(scene: SceneJSON): string {
     <camera name="track" pos="0 -6 3" mode="trackcom" xyaxes="1 0 0 0 1 2"/>
 
     <!-- Floor plane -->
-    <geom name="floor" type="plane" size="${scene.floor.width_m / 2} ${scene.floor.depth_m / 2} 0.1" pos="0 0 0" rgba="0.8 0.8 0.8 1"/>
+    <geom name="floor" type="plane" size="${scene.floor.width_m / 2} ${scene.floor.depth_m / 2} 0.1" pos="0 0 0" rgba="0 0 0 0"/>
     
     <!-- Obstacles -->
 ${obstaclesBodies}

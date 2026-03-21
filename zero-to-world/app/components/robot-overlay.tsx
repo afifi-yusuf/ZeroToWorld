@@ -98,7 +98,8 @@ export function RobotOverlay({ sceneJSON, active }: RobotOverlayProps) {
       )}
       <canvas
         ref={canvasRef}
-        className="w-full h-full object-contain"
+        className="w-full h-full object-contain mix-blend-screen"
+        style={{ mixBlendMode: "screen" }}
       />
     </div>
   );
